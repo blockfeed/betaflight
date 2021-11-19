@@ -81,6 +81,7 @@ typedef struct elrsReceiver_s {
     bool synced;
     volatile bool nextChannelRequired;
 
+    uint32_t statsUpdatedAtMs;
 
     elrsRxInitFnPtr init;
     elrsRxConfigFnPtr config;

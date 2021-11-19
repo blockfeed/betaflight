@@ -29,10 +29,12 @@
 #include <string.h>
 #include "platform.h"
 
-#if defined(USE_RX_EXPRESSLRS) && defined(USE_RX_EXPRESSLRS_TELEMETRY)
+#ifdef USE_RX_EXPRESSLRS
 
 #include "config/feature.h"
 #include "fc/runtime_config.h"
+
+#include "msp/msp_protocol.h"
 
 #include "rx/crsf_protocol.h"
 #include "rx/expresslrs_telemetry.h"
@@ -278,8 +280,8 @@ void processMspPacket(uint8_t *packet)
             break;
         case CRSF_FRAMETYPE_MSP_REQ:
             FALLTHROUGH;
-        case CRSF_FRAMETYPE_MSP_WRITE:
-            if (bufferCrsfMspFrame(&packet[ELRS_MSP_PACKET_OFFSET], CRSF_FRAME_RX_MSP_FRAME_SIZE)) {
+        case CRSF_FRAMETYPE_MSP_WRITE: //TODO: MSP_EEPROM_WRITE command is disabled.
+            if (packet[ELRS_MSP_COMMAND_INDEX] != MSP_EEPROM_WRITE && bufferCrsfMspFrame(&packet[ELRS_MSP_PACKET_OFFSET], CRSF_FRAME_RX_MSP_FRAME_SIZE)) {
                 handleCrsfMspFrameBuffer(CRSF_FRAME_TX_MSP_FRAME_SIZE + 1, &bufferMspResponse);
                 mspReplyPending = true;
             }

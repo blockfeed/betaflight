@@ -36,25 +36,29 @@
 
 #define ELRS_NR_SEQUENCE_ENTRIES 256
 
-#define ELRS_RNG_MAX 0x7FFF
-
 #define ELRS_RX_TX_BUFF_SIZE 8
 
 #define ELRS_TELEMETRY_TYPE_LINK 0x01
 #define ELRS_TELEMETRY_TYPE_DATA 0x02
 #define ELRS_MSP_BIND 0x09
+#define ELRS_MSP_MODEL_ID 0x0A
+#define ELRS_MSP_SET_RX_CONFIG 45
+
+#define ELRS_MODELMATCH_MASK 0x3F
 
 #define FREQ_HZ_TO_REG_VAL_900(freq) ((uint32_t)((double) freq / (double) SX127x_FREQ_STEP))
 #define FREQ_HZ_TO_REG_VAL_24(freq) ((uint32_t)((double) freq / (double) SX1280_FREQ_STEP))
 
 #define ELRS_RATE_MAX 4
-#define ELRS_RATE_DEFAULT 0
+#define ELRS_BINDING_RATE_24 3
+#define ELRS_BINDING_RATE_900 2
 
 #define ELRS_MAX_CHANNELS 16
 #define ELRS_RSSI_CHANNEL 15
 #define ELRS_LQ_CHANNEL 14
 
 #define ELRS_CONFIG_CHECK_MS 200
+#define ELRS_LINK_STATS_CHECK_MS 100
 
 typedef enum {
 #ifdef USE_RX_SX127X
@@ -62,6 +66,7 @@ typedef enum {
     AU915,
     EU433,
     EU868,
+    IN866,
     FCC915,
 #endif
 #ifdef USE_RX_SX1280
@@ -71,6 +76,11 @@ typedef enum {
     NONE,
 #endif
 } elrs_freq_domain_e;
+
+typedef enum {
+    SM_HYBRID = 0,
+    SM_HYBRID_WIDE = 1
+} elrs_switch_mode_e;
 
 typedef enum {
     TLM_RATIO_NO_TLM = 0,
@@ -132,6 +142,7 @@ uint32_t FHSSgetNextFreq(const int32_t freqCorrection);
 void FHSSrandomiseFHSSsequence(const uint8_t UID[], const elrs_freq_domain_e dom);
 uint8_t tlmRatioEnumToValue(const elrs_tlm_ratio_e enumval);
 uint16_t rateEnumToHz(const elrs_rf_rate_e eRate);
+uint16_t txPowerIndexToValue(const uint8_t index);
 
 //
 // Link Quality
@@ -145,5 +156,6 @@ uint32_t *lqGetArray(uint8_t *bitCount);
 
 uint16_t convertSwitch1b(const uint16_t val);
 uint16_t convertSwitch3b(const uint16_t val);
-uint16_t convertSwitch4b(const uint16_t val);
+uint16_t convertSwitchNb(const uint16_t val, const uint16_t max);
 uint16_t convertAnalog(const uint16_t val);
+uint8_t hybridWideNonceToSwitchIndex(const uint8_t nonce);

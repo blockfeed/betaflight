@@ -451,7 +451,6 @@ rx_spi_expresslrs_telemetry_unittest_SRC := \
 
 rx_spi_expresslrs_telemetry_unittest_DEFINES := \
 		USE_RX_EXPRESSLRS= \
-		USE_RX_EXPRESSLRS_TELEMETRY= \
 		USE_GPS= \
 		USE_MSP_OVER_TELEMETRY= \
 
