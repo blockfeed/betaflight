@@ -180,7 +180,7 @@ TEST(RxSpiExpressLrsUnitTest, TestInitUnbound)
     expressLrsSpiInit(&injectedConfig, &config, &extiConfig);
 
     //check initialization of elrsReceiver_t
-    EXPECT_FALSE(receiver.bound);
+    EXPECT_TRUE(receiver.inBindingMode);
     EXPECT_EQ(IO_NONE, receiver.resetPin);
     EXPECT_EQ(IO_NONE, receiver.busyPin);
     for (int i = 0; i < 6; i++) {
@@ -188,7 +188,7 @@ TEST(RxSpiExpressLrsUnitTest, TestInitUnbound)
     }
     EXPECT_EQ(0, receiver.nonceRX);
     EXPECT_EQ(0, receiver.freqOffset);
-    EXPECT_EQ(0, receiver.validPacketReceivedAtUs);
+    EXPECT_EQ(0, receiver.lastValidPacketMs);
 
     const uint32_t initialFrequencies[7] = {
         FREQ_HZ_TO_REG_VAL_900(433920000), 
@@ -285,7 +285,7 @@ TEST(RxSpiExpressLrsUnitTest, TestInitBound)
     }
 
     expressLrsSpiInit(&injectedConfig, &config, &extiConfig);
-    EXPECT_TRUE(receiver.bound);
+    EXPECT_FALSE(receiver.inBindingMode);
     for (int i = 0; i < 6; i++) {
         EXPECT_EQ(validUID[i], receiver.UID[i]);
     }
@@ -444,6 +444,7 @@ extern "C" {
     void expressLrsUpdatePhaseShift(int32_t ) {}
     void expressLrsTimerIncreaseFrequencyOffset(void) {}
     void expressLrsTimerDecreaseFrequencyOffset(void) {}
+    void expressLrsTimerResetFrequencyOffset(void) {}
     void expressLrsTimerStop(void) {}
     void expressLrsTimerResume(void) {}
     bool expressLrsTimerIsRunning(void) { return true; }

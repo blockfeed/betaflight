@@ -122,6 +122,11 @@ void expressLrsTimerDecreaseFrequencyOffset(void)
     timerState.frequencyOffsetTicks--;
 }
 
+void expressLrsTimerResetFrequencyOffset(void)
+{
+    timerState.frequencyOffsetTicks = 0;
+}
+
 static void expressLrsOnTimerUpdate(timerOvrHandlerRec_t *cbRec, captureCompare_t capture)
 {
     UNUSED(cbRec);

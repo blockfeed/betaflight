@@ -37,10 +37,17 @@ typedef enum {
 } dioReason_e;
 
 typedef enum {
-    LQ_NONE,
-    LQ_TRANSMITTING,
-    LQ_RECEIVING
-} lqMode_e;
+    CONNECTED,
+    TENTATIVE,
+    DISCONNECTED,
+    DISCONNECT_PENDING // used on modelmatch change to drop the connection
+} connectionState_e;
+
+typedef enum {
+    TIM_DISCONNECTED = 0,
+    TIM_TENTATIVE = 1,
+    TIM_LOCKED = 2
+} timerState_e;
 
 typedef struct elrsReceiver_s {
 
@@ -53,6 +60,7 @@ typedef struct elrsReceiver_s {
     volatile uint8_t nonceRX; // nonce that we THINK we are up to.
 
     elrs_mod_settings_t *mod_params;
+    elrs_rf_perf_params_t *rf_perf_params;
 
     const uint8_t *UID;
 
@@ -61,25 +69,29 @@ typedef struct elrsReceiver_s {
     int8_t rssiFiltered;
 
     uint8_t uplinkLQ;
-    lqMode_e lqMode;
 
-    uint32_t validPacketReceivedAtUs;
-    uint16_t missedPackets;
+    bool alreadyFHSS;
+    bool alreadyTLMresp;
+    bool lockRFmode;
 
-    uint16_t packetHandlingToTockDelayUs;
+    timerState_e timerState;
+    connectionState_e connectionState;
 
+    uint8_t rfModeCycleMultiplier;
     uint16_t cycleIntervalMs;
     uint32_t rfModeCycledAtMs;
     uint8_t rateIndex;
+    uint8_t nextRateIndex;
+
+    uint32_t gotConnectionMs;
+    uint32_t lastSyncPacketMs;
+    uint32_t lastValidPacketMs;
 
     uint32_t configCheckedAtMs;
     bool configChanged;
 
-    bool bound;
-    bool failsafe;
-    bool firstConnection;
-    bool synced;
-    volatile bool nextChannelRequired;
+    bool inBindingMode;
+    volatile bool fhssRequired;
 
     uint32_t statsUpdatedAtMs;
 
@@ -92,7 +104,6 @@ typedef struct elrsReceiver_s {
     elrsRxGetRFlinkInfoFnPtr getRFlinkInfo;
     elrsRxSetFrequencyFnPtr setFrequency;
     elrsRxHandleFreqCorrectionFnPtr handleFreqCorrection;
-    elrsRxIsBusyFnPtr isBusy;
 
     timerOvrHandlerRec_t timerUpdateCb;
 } elrsReceiver_t;

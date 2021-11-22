@@ -33,6 +33,7 @@ void expressLrsOnTimerTockISR(void);
 
 void expressLrsTimerIncreaseFrequencyOffset(void);
 void expressLrsTimerDecreaseFrequencyOffset(void);
+void expressLrsTimerResetFrequencyOffset(void);
 
 void expressLrsTimerStop(void);
 void expressLrsTimerResume(void);
